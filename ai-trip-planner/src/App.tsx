@@ -1,15 +1,19 @@
-import Header from '@/components/custom/Header'
-import Hero from '@/components/custom/hero'
-import './App.css'
+import { useState } from 'react';
+import { Toaster } from 'sonner';
+import { Header } from './components/custom/Header';
+import { LandingPage } from './components/custom/hero';
+import './App.css';
 
-function App() {
+export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
-    <>
-      <Header />
-      <Hero/>
-    </>
-  
-  )
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-indigo-100">
+      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      <main className="pt-24 pb-16">
+        <LandingPage isLoggedIn={isLoggedIn} />
+      </main>
+      <Toaster position="bottom-center" />
+    </div>
+  );
 }
-
-export default App
