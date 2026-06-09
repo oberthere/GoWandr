@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Toaster } from 'sonner';
-import { Header } from './components/custom/Header';
+import { Header } from './components/custom/header';
 import { LandingPage } from './components/custom/hero';
 import './App.css';
 
