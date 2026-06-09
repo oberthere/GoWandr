@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 
 const DESTINATIONS = [
   'Tokyo',
@@ -8,28 +9,7 @@ const DESTINATIONS = [
 ];
 
 export function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
-  const [destination, setDestination] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const init = () => {
-      if (!inputRef.current || !(window as any).google?.maps?.places) return;
-      const ac = new (window as any).google.maps.places.Autocomplete(inputRef.current);
-      ac.addListener('place_changed', () => {
-        const place = ac.getPlace();
-        setDestination(place?.formatted_address ?? place?.name ?? '');
-      });
-    };
-
-    if ((window as any).google?.maps?.places) {
-      init();
-    } else {
-      const id = setInterval(() => {
-        if ((window as any).google?.maps?.places) { init(); clearInterval(id); }
-      }, 200);
-      return () => clearInterval(id);
-    }
-  }, []);
+  const [destination, setDestination] = useState<object | null>(null);
   const [duration, setDuration] = useState('');
   const [budget, setBudget] = useState('');
   const [customBudget, setCustomBudget] = useState('');
@@ -54,12 +34,13 @@ export function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
         <div className="mt-6 space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">Destination</label>
-            <input
-              ref={inputRef}
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              placeholder="e.g., Paris"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-500"
+            <GooglePlacesAutocomplete
+              apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+              selectProps={{
+                value: destination,
+                onChange: (v: object | null) => setDestination(v),
+                placeholder: 'Search destination...',
+              }}
             />
           </div>
 
@@ -109,7 +90,7 @@ export function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
               type="button"
               onClick={() => handleAction('generate an itinerary')}
               className="rounded-md bg-slate-900 px-4 py-2 text-sm text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={!destination.trim()}
+              disabled={!destination}
             >
               Generate Trip
             </button>
@@ -124,7 +105,7 @@ export function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
             <button
               key={place}
               type="button"
-              onClick={() => setDestination(place)}
+              onClick={() => setDestination({ label: place, value: { description: place, place_id: place } })}
               className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
             >
               {place}
