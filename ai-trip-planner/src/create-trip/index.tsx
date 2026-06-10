@@ -57,7 +57,12 @@ function CreateTrip() {
           <Input
             placeholder='Ex.3'
             type='number'
-            onChange={(e) => handleInputChange('noOfDays', e.target.value)}
+            min={1}
+            onChange={(e) => {
+              const val = Math.max(1, Number(e.target.value));
+              handleInputChange('noOfDays', String(val));
+              e.target.value = String(val);
+            }}
           />
         </div>
 
