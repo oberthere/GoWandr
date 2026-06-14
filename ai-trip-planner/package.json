@@ -12,15 +12,16 @@
   "dependencies": {
     "@base-ui/react": "latest",
     "@fontsource-variable/geist": "latest",
+    "@google/generative-ai": "^0.24.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.17.0",
     "motion": "^12.40.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-google-places-autocomplete": "latest",
     "react-router-dom": "^7.15.1",
     "shadcn": "latest",
-    "react-google-places-autocomplete": "latest",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "tw-animate-css": "latest"

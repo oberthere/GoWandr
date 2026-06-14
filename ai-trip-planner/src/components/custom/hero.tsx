@@ -1,27 +1,24 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import { SELECT_BUDGET_OPTIONS } from '@/create-trip/constants';
+import type { PlaceResult } from '@/types/trip';
 
-const DESTINATIONS = [
-  'Tokyo',
-  'Paris',
-  'Bali',
-];
+const QUICK_DESTINATIONS = ['Tokyo', 'Paris', 'Bali'];
 
 export function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
-  const [destination, setDestination] = useState<object | null>(null);
+  const [destination, setDestination] = useState<PlaceResult | null>(null);
   const [duration, setDuration] = useState('');
   const [budget, setBudget] = useState('');
   const [customBudget, setCustomBudget] = useState('');
 
   const handleAction = (actionName: string) => {
-
     if (!isLoggedIn) {
       toast.error('Account required', {
         description: `Please log in to ${actionName}.`,
       });
     } else {
-      toast.success(`Success! Added to your trip plan.`);
+      toast.success('Success! Added to your trip plan.');
     }
   };
 
@@ -38,7 +35,7 @@ export function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
               apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
               selectProps={{
                 value: destination,
-                onChange: (v: object | null) => setDestination(v),
+                onChange: (v: PlaceResult | null) => setDestination(v),
                 placeholder: 'Search destination...',
               }}
             />
@@ -64,9 +61,9 @@ export function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-500"
               >
                 <option value="" disabled>Select budget</option>
-                <option value="budget">Budget-friendly</option>
-                <option value="moderate">Moderate</option>
-                <option value="luxury">Luxury</option>
+                {SELECT_BUDGET_OPTIONS.map((opt) => (
+                  <option key={opt.id} value={opt.title.toLowerCase()}>{opt.title}</option>
+                ))}
                 <option value="custom">Custom</option>
               </select>
             </div>
@@ -101,7 +98,7 @@ export function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
       <div className="mx-auto mt-6 max-w-3xl rounded-lg border border-slate-200 bg-white p-6">
         <h2 className="text-lg font-semibold text-slate-900">Quick destinations</h2>
         <div className="mt-3 flex flex-wrap gap-2">
-          {DESTINATIONS.map((place) => (
+          {QUICK_DESTINATIONS.map((place) => (
             <button
               key={place}
               type="button"

@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { Header } from './components/custom/header';
 import { LandingPage } from './components/custom/hero';
-import CreateTrip from './create-trip/index';
+import CreateTrip from './create-trip';
 import './App.css';
 
 export default function App() {
@@ -15,9 +15,8 @@ export default function App() {
         <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <main className="pt-24 pb-16">
           <Routes>
-            <Route path="/" element={<CreateTrip />} />
+            <Route path="/" element={<LandingPage isLoggedIn={isLoggedIn} />} />
             <Route path="/create-trip" element={<CreateTrip />} />
-            <Route path="/home" element={<LandingPage isLoggedIn={isLoggedIn} />} />
           </Routes>
         </main>
         <Toaster position="bottom-center" />

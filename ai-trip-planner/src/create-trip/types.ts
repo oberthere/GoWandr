@@ -1,13 +1,12 @@
+import type { PlaceResult } from '@/types/trip';
+
+export type { PlaceResult };
+
 export interface TripFormData {
   location?: PlaceResult;
   noOfDays?: string;
   budget?: string;
   traveler?: string;
-}
-
-export interface PlaceResult {
-  label: string;
-  value: object;
 }
 
 export interface BudgetOption {
