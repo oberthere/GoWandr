@@ -15,8 +15,9 @@ export default function App() {
         <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <main className="pt-24 pb-16">
           <Routes>
-            <Route path="/" element={<LandingPage isLoggedIn={isLoggedIn} />} />
+            <Route path="/" element={<CreateTrip />} />
             <Route path="/create-trip" element={<CreateTrip />} />
+            <Route path="/home" element={<LandingPage isLoggedIn={isLoggedIn} />} />
           </Routes>
         </main>
         <Toaster position="bottom-center" />

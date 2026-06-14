@@ -1,26 +1,55 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { chatSession } from '@/service/AIModel';
 import { useState } from 'react';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import { toast } from 'sonner';
 
-import { MAX_TRIP_DAYS, SELECT_BUDGET_OPTIONS, SELECT_TRAVEL_LIST } from './constants';
+import { MAX_TRIP_DAYS, SELECT_BUDGET_OPTIONS, SELECT_TRAVEL_LIST, buildPrompt } from './constants';
 import OptionCard from './OptionCard';
 import type { PlaceResult, TripFormData } from './types';
 
 function CreateTrip() {
   const [destination, setDestination] = useState<PlaceResult | null>(null);
   const [formData, setFormData] = useState<TripFormData>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = <K extends keyof TripFormData>(name: K, value: TripFormData[K]) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const onGenerateTrip = () => {
+  const onGenerateTrip = async () => {
     const { location, noOfDays, budget, traveler } = formData;
-    if (!location || !noOfDays || !budget || !traveler) return;
-    if (Number(noOfDays) > MAX_TRIP_DAYS) return;
 
-    // TODO: call AI trip generation API
+    if (!location || !noOfDays || !budget || !traveler) {
+      toast.error('Please fill in all fields before generating.');
+      return;
+    }
+    if (Number(noOfDays) > MAX_TRIP_DAYS) {
+      toast.error(`Maximum trip length is ${MAX_TRIP_DAYS} days.`);
+      return;
+    }
+
+    const prompt = buildPrompt({
+      location: location.label,
+      days: noOfDays,
+      budget,
+      travelers: traveler,
+    });
+
+    setIsLoading(true);
+    try {
+      const result = await chatSession.sendMessage(prompt);
+      const raw = result.response.text();
+      const itinerary = JSON.parse(raw);
+      console.log(itinerary);
+      toast.success('Your trip is ready!');
+      // TODO: navigate to itinerary results page, passing itinerary
+    } catch {
+      toast.error('Failed to generate trip. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -90,15 +119,17 @@ function CreateTrip() {
                 icon={item.icon}
                 title={item.title}
                 desc={item.desc}
-                selected={formData.traveler === item.people}
-                onClick={() => handleInputChange('traveler', item.people)}
+                selected={formData.traveler === item.title}
+                onClick={() => handleInputChange('traveler', item.title)}
               />
             ))}
           </div>
         </div>
 
         <div className='my-10 flex justify-end'>
-          <Button onClick={onGenerateTrip}>Generate Trip</Button>
+          <Button onClick={onGenerateTrip} disabled={isLoading}>
+            {isLoading ? 'Generating...' : 'Generate Trip'}
+          </Button>
         </div>
       </div>
     </div>
