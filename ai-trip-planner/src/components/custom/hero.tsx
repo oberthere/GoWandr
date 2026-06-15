@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import { PlacesAutocomplete } from '@/components/ui/PlacesAutocomplete';
 import { SELECT_BUDGET_OPTIONS } from '@/create-trip/constants';
 import type { PlaceResult } from '@/types/trip';
 
@@ -31,13 +31,10 @@ export function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
         <div className="mt-6 space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">Destination</label>
-            <GooglePlacesAutocomplete
-              apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-              selectProps={{
-                value: destination,
-                onChange: (v: PlaceResult | null) => setDestination(v),
-                placeholder: 'Search destination...',
-              }}
+            <PlacesAutocomplete
+              value={destination}
+              onChange={(v) => setDestination(v)}
+              placeholder='Search destination...'
             />
           </div>
 
@@ -102,7 +99,7 @@ export function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
             <button
               key={place}
               type="button"
-              onClick={() => setDestination({ label: place, value: { description: place, place_id: place } })}
+              onClick={() => setDestination({ label: place, value: { placeId: '' } })}
               className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
             >
               {place}

@@ -1,4 +1,6 @@
 export interface PlaceResult {
   label: string;
-  value: object;
+  value: {
+    placeId: string;
+  };
 }
