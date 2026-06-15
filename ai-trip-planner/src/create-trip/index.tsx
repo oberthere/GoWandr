@@ -1,34 +1,28 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PlacesAutocomplete } from '@/components/ui/PlacesAutocomplete';
 import { chatSession } from '@/service/AIModel';
+import { getStoredUser } from '@/service/GoogleAuth';
 import { useState } from 'react';
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import { toast } from 'sonner';
 
 import { MAX_TRIP_DAYS, SELECT_BUDGET_OPTIONS, SELECT_TRAVEL_LIST, buildPrompt } from './constants';
 import OptionCard from './OptionCard';
-import type { PlaceResult, TripFormData } from './types';
+import { SignInDialog } from './SignInDialog';
+import type { TripFormData } from './types';
 
 function CreateTrip() {
-  const [destination, setDestination] = useState<PlaceResult | null>(null);
   const [formData, setFormData] = useState<TripFormData>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showSignIn, setShowSignIn] = useState(false);
 
   const handleInputChange = <K extends keyof TripFormData>(name: K, value: TripFormData[K]) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const onGenerateTrip = async () => {
+  const generateTrip = async () => {
     const { location, noOfDays, budget, traveler } = formData;
-
-    if (!location || !noOfDays || !budget || !traveler) {
-      toast.error('Please fill in all fields before generating.');
-      return;
-    }
-    if (Number(noOfDays) > MAX_TRIP_DAYS) {
-      toast.error(`Maximum trip length is ${MAX_TRIP_DAYS} days.`);
-      return;
-    }
+    if (!location || !noOfDays || !budget || !traveler) return;
 
     const prompt = buildPrompt({
       location: location.label,
@@ -45,11 +39,37 @@ function CreateTrip() {
       console.log(itinerary);
       toast.success('Your trip is ready!');
       // TODO: navigate to itinerary results page, passing itinerary
-    } catch {
-      toast.error('Failed to generate trip. Please try again.');
+    } catch (err) {
+      console.error('[generateTrip]', err);
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.includes('429') || message.toLowerCase().includes('quota')) {
+        toast.error('Too many requests. Please wait a minute and try again.');
+      } else {
+        toast.error('Failed to generate trip. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const onGenerateTrip = () => {
+    const { location, noOfDays, budget, traveler } = formData;
+
+    if (!location || !noOfDays || !budget || !traveler) {
+      toast.error('Please fill in all fields before generating.');
+      return;
+    }
+    if (Number(noOfDays) > MAX_TRIP_DAYS) {
+      toast.error(`Maximum trip length is ${MAX_TRIP_DAYS} days.`);
+      return;
+    }
+
+    if (!getStoredUser()) {
+      setShowSignIn(true);
+      return;
+    }
+
+    generateTrip();
   };
 
   return (
@@ -63,16 +83,11 @@ function CreateTrip() {
         {/* Destination */}
         <div>
           <h2 className='text-xl my-3 font-medium'>What is your destination of choice?</h2>
-          <GooglePlacesAutocomplete
-            apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-            selectProps={{
-              value: destination,
-              onChange: (v: PlaceResult | null) => {
-                setDestination(v);
-                if (v) handleInputChange('location', v);
-              },
-              placeholder: 'Search destination...',
+          <PlacesAutocomplete
+            onChange={(v) => {
+              if (v) handleInputChange('location', v);
             }}
+            placeholder='Search destination...'
           />
         </div>
 
@@ -132,6 +147,12 @@ function CreateTrip() {
           </Button>
         </div>
       </div>
+
+      <SignInDialog
+        open={showSignIn}
+        onOpenChange={setShowSignIn}
+        onSignedIn={() => generateTrip()}
+      />
     </div>
   );
 }
