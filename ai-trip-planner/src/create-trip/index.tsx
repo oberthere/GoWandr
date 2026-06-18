@@ -1,8 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { GeneratingOverlay } from '@/components/custom/GeneratingOverlay';
 import { PlacesAutocomplete } from '@/components/ui/PlacesAutocomplete';
 import { chatSession } from '@/service/AIModel';
 import { getStoredUser } from '@/service/GoogleAuth';
+import { db } from '@/service/firebaseConfig';
+import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -14,10 +17,32 @@ import type { TripFormData } from './types';
 function CreateTrip() {
   const [formData, setFormData] = useState<TripFormData>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
 
   const handleInputChange = <K extends keyof TripFormData>(name: K, value: TripFormData[K]) => {
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const onSaveAiTrip = async (tripData: Record<string, unknown>) => {
+    const user = getStoredUser();
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      const docId = Date.now().toString();
+      await setDoc(doc(db, 'AITrips', docId), {
+        userSelection: formData,
+        tripData,
+        userEmail: user.email,
+        id: docId,
+      });
+    } catch (err) {
+      console.error('[onSaveAiTrip]', err);
+      toast.error('Could not save your trip.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const generateTrip = async () => {
@@ -35,8 +60,11 @@ function CreateTrip() {
     try {
       const result = await chatSession.sendMessage(prompt);
       const raw = result.response.text();
+      console.log('AI response:', raw);
       const itinerary = JSON.parse(raw);
       console.log(itinerary);
+      setShowSignIn(false);
+      await onSaveAiTrip(itinerary);
       toast.success('Your trip is ready!');
       // TODO: navigate to itinerary results page, passing itinerary
     } catch (err) {
@@ -142,8 +170,8 @@ function CreateTrip() {
         </div>
 
         <div className='my-10 flex justify-end'>
-          <Button onClick={onGenerateTrip} disabled={isLoading}>
-            {isLoading ? 'Generating...' : 'Generate Trip'}
+          <Button onClick={onGenerateTrip} disabled={isLoading || isSaving}>
+            {isSaving ? 'Saving...' : isLoading ? 'Generating...' : 'Generate Trip'}
           </Button>
         </div>
       </div>
@@ -153,6 +181,8 @@ function CreateTrip() {
         onOpenChange={setShowSignIn}
         onSignedIn={() => generateTrip()}
       />
+
+      <GeneratingOverlay open={isLoading || isSaving} />
     </div>
   );
 }
