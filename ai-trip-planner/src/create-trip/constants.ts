@@ -51,6 +51,15 @@ Return ONLY valid JSON — no markdown, no code fences, no commentary before or 
   "currency": "ISO currency code, e.g. USD",
   "estimatedTotalCost": number,
   "tripSummary": "1-2 sentence overview",
+  "hotelOptions": [
+    {
+      "hotelName": "real, specific hotel name in the destination",
+      "hotelAddress": "full street address",
+      "pricePerNight": "approximate nightly price with currency, e.g. '$180/night'",
+      "rating": number,
+      "description": "1-2 sentences on why it fits the budget and traveler type"
+    }
+  ],
   "days": [
     {
       "day": 1,
@@ -73,7 +82,7 @@ Return ONLY valid JSON — no markdown, no code fences, no commentary before or 
   ]
 }
 
-IMPORTANT: Every "name" must be a REAL, specific, currently-operating place in {location} (not generic like "a local cafe"). The "placesQuery" must be specific enough to return exactly one result in Google Places — include the place name plus neighborhood and city.`;
+Provide 3-4 "hotelOptions" matched to the budget level. Every hotel and every "name" must be a REAL, specific, currently-operating place in {location} (not generic like "a local cafe"). The "placesQuery" must be specific enough to return exactly one result in Google Places — include the place name plus neighborhood and city.`;
 
 export function buildPrompt(prefs: {
   location: string;
