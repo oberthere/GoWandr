@@ -7,6 +7,7 @@ import { getStoredUser } from '@/service/GoogleAuth';
 import { db } from '@/service/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { MAX_TRIP_DAYS, SELECT_BUDGET_OPTIONS, SELECT_TRAVEL_LIST, buildPrompt } from './constants';
@@ -15,6 +16,7 @@ import { SignInDialog } from './SignInDialog';
 import type { TripFormData } from './types';
 
 function CreateTrip() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<TripFormData>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -24,9 +26,9 @@ function CreateTrip() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const onSaveAiTrip = async (tripData: Record<string, unknown>) => {
+  const onSaveAiTrip = async (tripData: Record<string, unknown>): Promise<string | undefined> => {
     const user = getStoredUser();
-    if (!user) return;
+    if (!user) return undefined;
 
     setIsSaving(true);
     try {
@@ -37,9 +39,11 @@ function CreateTrip() {
         userEmail: user.email,
         id: docId,
       });
+      return docId;
     } catch (err) {
       console.error('[onSaveAiTrip]', err);
       toast.error('Could not save your trip.');
+      return undefined;
     } finally {
       setIsSaving(false);
     }
@@ -64,9 +68,9 @@ function CreateTrip() {
       const itinerary = JSON.parse(raw);
       console.log(itinerary);
       setShowSignIn(false);
-      await onSaveAiTrip(itinerary);
+      const docId = await onSaveAiTrip(itinerary);
       toast.success('Your trip is ready!');
-      // TODO: navigate to itinerary results page, passing itinerary
+      if (docId) navigate(`/view-trip/${docId}`);
     } catch (err) {
       console.error('[generateTrip]', err);
       const message = err instanceof Error ? err.message : String(err);

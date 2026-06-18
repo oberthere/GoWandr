@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { Header } from './components/custom/header';
 import { LandingPage } from './components/custom/hero';
 import CreateTrip from './create-trip';
+import ViewTrip from './view-trip';
 import './App.css';
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<CreateTrip />} />
             <Route path="/create-trip" element={<CreateTrip />} />
+            <Route path="/view-trip/:tripId" element={<ViewTrip />} />
             <Route path="/home" element={<LandingPage isLoggedIn={isLoggedIn} />} />
           </Routes>
         </main>
