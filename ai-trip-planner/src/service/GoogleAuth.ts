@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 import type { TokenResponse } from '@react-oauth/google';
 
 export interface GoogleUser {
@@ -9,6 +10,8 @@ export interface GoogleUser {
 }
 
 type TokenInfo = Pick<TokenResponse, 'access_token'>;
+
+const AUTH_EVENT = 'auth-changed';
 
 /**
  * Exchanges a Google OAuth token for the user's profile, logs the access
@@ -28,10 +31,36 @@ export const getUserProfile = async (tokenInfo: TokenInfo): Promise<GoogleUser> 
   );
 
   localStorage.setItem('user', JSON.stringify(res.data));
+  window.dispatchEvent(new Event(AUTH_EVENT));
   return res.data;
 };
 
 export function getStoredUser(): GoogleUser | null {
   const raw = localStorage.getItem('user');
   return raw ? (JSON.parse(raw) as GoogleUser) : null;
+}
+
+export function signOut() {
+  localStorage.removeItem('user');
+  window.dispatchEvent(new Event(AUTH_EVENT));
+}
+
+/**
+ * Reactive view of the signed-in user. Re-renders on sign-in / sign-out
+ * from anywhere in the app (and across tabs via the storage event).
+ */
+export function useAuthUser(): GoogleUser | null {
+  const [user, setUser] = useState<GoogleUser | null>(() => getStoredUser());
+
+  useEffect(() => {
+    const sync = () => setUser(getStoredUser());
+    window.addEventListener(AUTH_EVENT, sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener(AUTH_EVENT, sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
+
+  return user;
 }
