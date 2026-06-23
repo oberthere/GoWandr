@@ -1,16 +1,16 @@
 import type { BudgetOption, TravelerOption } from './types';
 
 export const SELECT_BUDGET_OPTIONS: BudgetOption[] = [
-  { id: 1, title: 'Cheap',    desc: 'Stay conscious of costs',       icon: '💵' },
-  { id: 2, title: 'Moderate', desc: 'Keep cost on the average side', icon: '💰' },
-  { id: 3, title: 'Luxury',   desc: "Don't worry about cost",        icon: '💸' },
+  { id: 1, title: 'Shoestring',  desc: 'Stay sharp on costs.',        icon: 'wallet' },
+  { id: 2, title: 'Comfortable', desc: 'Balanced, mid-range picks.',  icon: 'home'   },
+  { id: 3, title: 'No limits',   desc: 'The best of everything.',     icon: 'star'   },
 ];
 
 export const SELECT_TRAVEL_LIST: TravelerOption[] = [
-  { id: 1, title: 'Just Me',  desc: 'A sole traveler in exploration',    icon: '✈️', people: '1 Person'      },
-  { id: 2, title: 'A Couple', desc: 'Two travelers in tandem',           icon: '🥂', people: '2 People'      },
-  { id: 3, title: 'Family',   desc: 'A group of fun loving adventurers', icon: '🏡', people: '3 to 5 People'  },
-  { id: 4, title: 'Friends',  desc: 'A bunch of thrill-seekers',         icon: '⛵', people: '5 to 10 People' },
+  { id: 1, title: 'Solo',     desc: 'Just me, exploring.',     icon: 'solo',    people: '1 Person'      },
+  { id: 2, title: 'A couple', desc: 'Two, in tandem.',         icon: 'couple',  people: '2 People'      },
+  { id: 3, title: 'Family',   desc: 'Kids in tow.',            icon: 'home',    people: '3 to 5 People'  },
+  { id: 4, title: 'Friends',  desc: 'A crew of adventurers.',  icon: 'friends', people: '5 to 10 People' },
 ];
 
 export const MAX_TRIP_DAYS = 5;
@@ -25,13 +25,13 @@ TRIP PREFERENCES
 - Traveling as: {travelers}
 
 BUDGET GUIDANCE
-- "Cheap": prioritize free/low-cost attractions, street food, public transit, budget eats. Keep daily spend low.
-- "Moderate": mix of paid attractions and free sights, mid-range sit-down restaurants, occasional taxi/rideshare.
-- "Luxury": premium experiences, fine dining, private tours, no cost constraints. Recommend the best regardless of price.
+- "Shoestring": prioritize free/low-cost attractions, street food, public transit, budget eats. Keep daily spend low.
+- "Comfortable": mix of paid attractions and free sights, mid-range sit-down restaurants, occasional taxi/rideshare.
+- "No limits": premium experiences, fine dining, private tours, no cost constraints. Recommend the best regardless of price.
 
 TRAVELER GUIDANCE
-- "Just Me": flexible solo-friendly spots, social/walkable areas, solo-dining-friendly restaurants.
-- "A Couple": romantic/scenic spots, intimate restaurants, sunset views, couple-oriented activities.
+- "Solo": flexible solo-friendly spots, social/walkable areas, solo-dining-friendly restaurants.
+- "A couple": romantic/scenic spots, intimate restaurants, sunset views, couple-oriented activities.
 - "Family": kid-friendly attractions, relaxed pacing, family restaurants, accessible venues.
 - "Friends": group activities, nightlife, lively dining, fun/adventurous experiences.
 
