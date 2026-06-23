@@ -25,7 +25,7 @@ export function Header() {
   });
 
   const tabClass = (active: boolean) =>
-    `rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+    `rounded-full px-5 py-2 text-[0.95rem] font-semibold transition-colors ${
       active ? 'bg-ink text-white' : 'text-muted2 hover:text-ink'
     }`;
 
@@ -34,9 +34,9 @@ export function Header() {
       <div className="mx-auto flex max-w-[min(1600px,92vw)] items-center gap-6 px-6 py-3.5">
         <Link to="/" className="mr-auto flex items-center gap-2.5">
           <span className="grid h-7.5 w-7.5 place-items-center rounded-lg bg-ink font-display text-[0.95rem] font-bold text-white">
-            W
+            G
           </span>
-          <span className="font-display text-xl font-semibold tracking-[-0.03em]">Wayfare</span>
+          <span className="font-display text-xl font-semibold tracking-[-0.03em]">GoWandr</span>
         </Link>
 
         {showTabs && (

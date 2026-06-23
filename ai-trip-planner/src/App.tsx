@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { Header } from './components/custom/header';
 import { Landing } from './components/custom/Landing';
+import { Footer } from './view-trip/Footer';
 import CreateTrip from './create-trip';
 import ViewTrip from './view-trip';
 import MyTrips from './my-trips';
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/my-trips" element={<MyTrips />} />
           </Routes>
         </main>
+        <Footer />
         <Toaster position="bottom-center" />
       </div>
     </BrowserRouter>
