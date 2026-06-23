@@ -70,7 +70,7 @@ function CreateTrip() {
       setShowSignIn(false);
       const docId = await onSaveAiTrip(itinerary);
       toast.success('Your trip is ready!');
-      if (docId) navigate(`/view-trip/${docId}`);
+      if (docId) navigate(`/view-trip/${docId}`, { state: { from: 'plan' } });
     } catch (err) {
       console.error('[generateTrip]', err);
       const message = err instanceof Error ? err.message : String(err);
@@ -91,6 +91,10 @@ function CreateTrip() {
       toast.error('Please fill in all fields before generating.');
       return;
     }
+    if (Number(noOfDays) < 1) {
+      toast.error('Trip length must be at least 1 day.');
+      return;
+    }
     if (Number(noOfDays) > MAX_TRIP_DAYS) {
       toast.error(`Maximum trip length is ${MAX_TRIP_DAYS} days.`);
       return;
@@ -105,79 +109,111 @@ function CreateTrip() {
   };
 
   return (
-    <div className='sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10'>
-      <h2 className='font-bold text-3xl'>Tell us your travel preferences</h2>
-      <p className='mt-3 text-gray-500 text-xl'>
-        Just provide some basic information, and our trip planner will generate a customized itinerary based on your preferences.
-      </p>
+    <div className="mx-auto max-w-[min(1600px,92vw)] px-6 pb-24">
+      {/* Plan head */}
+      <div className="max-w-165 pt-16 pb-10">
+        <span className="eyebrow">Build a trip</span>
+        <h1 className="mt-3.5 mb-4 font-display text-[clamp(2.3rem,5vw,3.5rem)] font-medium leading-[1.04] tracking-[-0.03em]">
+          Tell us how you like to{' '}
+          <span className="border-b-[3px] border-ink pb-px">travel.</span>
+        </h1>
+        <p className="max-w-[48ch] text-[1.08rem] text-graphite">
+          A few details is all it takes. We'll draft a day-by-day plan with places to stay, eat,
+          and explore, costed and timed.
+        </p>
+      </div>
 
-      <div className='mt-20 flex flex-col gap-10'>
-        {/* Destination */}
-        <div>
-          <h2 className='text-xl my-3 font-medium'>What is your destination of choice?</h2>
+      {/* Destination + days */}
+      <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-[2fr_1fr]">
+        <div className="mb-9">
+          <label className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]">
+            Where to?
+          </label>
+          <div className="mb-3.5 text-[0.9rem] text-muted2">A city, a region, or a whole country.</div>
           <PlacesAutocomplete
             onChange={(v) => {
               if (v) handleInputChange('location', v);
             }}
-            placeholder='Search destination...'
+            placeholder="Search a destination, try Shenzhen or Lisbon"
           />
         </div>
-
-        {/* Number of Days */}
-        <div>
-          <h2 className='text-xl my-3 font-medium'>How many days are you planning your trip?</h2>
+        <div className="mb-9">
+          <label className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]">
+            How many days?
+          </label>
+          <div className="mb-3.5 text-[0.9rem] text-muted2">We'll pace it for you.</div>
           <Input
-            placeholder='Ex. 3'
-            type='number'
+            placeholder="e.g. 3"
+            type="number"
             min={1}
             max={MAX_TRIP_DAYS}
+            step={1}
+            inputMode="numeric"
             value={formData.noOfDays ?? ''}
             onChange={(e) => {
-              const val = Math.max(1, Number(e.target.value));
-              handleInputChange('noOfDays', String(val));
+              // Whole numbers only, no leading zeros; allow empty so it can be cleared/retyped.
+              const digits = e.target.value.replace(/\D/g, '').replace(/^0+/, '');
+              handleInputChange('noOfDays', digits);
             }}
           />
         </div>
+      </div>
 
-        {/* Budget */}
-        <div>
-          <h2 className='text-xl my-3 font-medium'>What is your budget?</h2>
-          <div className='grid grid-cols-3 gap-5 mt-5'>
-            {SELECT_BUDGET_OPTIONS.map((item) => (
-              <OptionCard
-                key={item.id}
-                icon={item.icon}
-                title={item.title}
-                desc={item.desc}
-                selected={formData.budget === item.title}
-                onClick={() => handleInputChange('budget', item.title)}
-              />
-            ))}
-          </div>
+      {/* Budget */}
+      <div className="mb-9">
+        <label className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]">
+          What's the budget like?
+        </label>
+        <div className="mb-3.5 text-[0.9rem] text-muted2">
+          Sets the tier for stays, food, and activities.
         </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {SELECT_BUDGET_OPTIONS.map((item) => (
+            <OptionCard
+              key={item.id}
+              icon={item.icon}
+              title={item.title}
+              desc={item.desc}
+              selected={formData.budget === item.title}
+              onClick={() => handleInputChange('budget', item.title)}
+            />
+          ))}
+        </div>
+      </div>
 
-        {/* Traveler */}
-        <div>
-          <h2 className='text-xl my-3 font-medium'>Who do you plan on traveling with on your next adventure?</h2>
-          <div className='grid grid-cols-3 gap-5 mt-5'>
-            {SELECT_TRAVEL_LIST.map((item) => (
-              <OptionCard
-                key={item.id}
-                icon={item.icon}
-                title={item.title}
-                desc={item.desc}
-                selected={formData.traveler === item.title}
-                onClick={() => handleInputChange('traveler', item.title)}
-              />
-            ))}
-          </div>
+      {/* Traveler */}
+      <div className="mb-9">
+        <label className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]">
+          Who's coming along?
+        </label>
+        <div className="mb-3.5 text-[0.9rem] text-muted2">Shapes the pace and the picks.</div>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {SELECT_TRAVEL_LIST.map((item) => (
+            <OptionCard
+              key={item.id}
+              icon={item.icon}
+              title={item.title}
+              desc={item.desc}
+              selected={formData.traveler === item.title}
+              onClick={() => handleInputChange('traveler', item.title)}
+            />
+          ))}
         </div>
+      </div>
 
-        <div className='my-10 flex justify-end'>
-          <Button onClick={onGenerateTrip} disabled={isLoading || isSaving}>
-            {isSaving ? 'Saving...' : isLoading ? 'Generating...' : 'Generate Trip'}
-          </Button>
-        </div>
+      {/* Generate */}
+      <div className="flex flex-wrap items-center gap-4.5 border-t border-line pt-8">
+        <Button
+          onClick={onGenerateTrip}
+          disabled={isLoading || isSaving}
+          className="inline-flex items-center gap-2.5 rounded-full bg-ink px-7.5 py-3.75 text-base font-semibold text-white transition hover:bg-black"
+        >
+          {isSaving ? 'Saving...' : isLoading ? 'Drafting...' : 'Draft my itinerary'}
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </Button>
+        <span className="font-mono text-[0.84rem] text-muted2">~30 seconds · editable after</span>
       </div>
 
       <SignInDialog
