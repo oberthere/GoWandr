@@ -1,39 +1,145 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PlacePhoto } from '@/components/custom/PlacePhoto';
+import { SELECT_BUDGET_OPTIONS } from '@/create-trip/constants';
 import { useAuthUser } from '@/service/GoogleAuth';
-import { getUserTrips } from '@/service/Trips';
+import { deleteTrip, getUserTrips } from '@/service/Trips';
 import type { TripDoc } from '@/types/itinerary';
 
-function TripCard({ trip }: { trip: TripDoc }) {
+type SortKey = 'new' | 'old' | 'name';
+
+function TripCard({ trip, onDelete }: { trip: TripDoc; onDelete: (id: string) => void }) {
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const destination = trip.tripData?.destination ?? trip.userSelection?.location?.label ?? 'Trip';
-  const days = trip.tripData?.days?.length ?? trip.userSelection?.noOfDays;
+  const days = trip.tripData?.days?.length ?? (Number(trip.userSelection?.noOfDays) || 0);
   const budget = trip.userSelection?.budget;
+  const traveler = trip.userSelection?.traveler;
+  const badge = destination.split(',').pop()?.trim();
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setConfirming(false);
+  };
 
   return (
-    <Link
-      to={`/view-trip/${trip.id}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-lg"
+    <div className="relative">
+      <button
+        type="button"
+        className="trip h-full w-full"
+        onClick={() => navigate(`/view-trip/${trip.id}`, { state: { from: 'trips' } })}
+      >
+        <div className="ph">
+          <PlacePhoto query={destination} fallback="🌆" />
+          {badge && <span className="badge">{badge}</span>}
+        </div>
+        <div className="tbody">
+          <h4>{destination.split(',')[0]}</h4>
+          <div className="row">
+            {days ? `${days} ${days === 1 ? 'day' : 'days'}` : 'Trip'}
+            {budget && (
+              <>
+                <span className="dot-sep" />
+                {budget}
+              </>
+            )}
+            {traveler && (
+              <>
+                <span className="dot-sep" />
+                {traveler}
+              </>
+            )}
+          </div>
+        </div>
+      </button>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setConfirming(false);
+          setMenuOpen((o) => !o);
+        }}
+        aria-label="Trip options"
+        className="absolute right-3 top-3 z-10 grid h-6 w-6 place-items-center rounded-md bg-white/90 text-ink shadow-soft backdrop-blur transition hover:bg-white"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="12" r="1.7" />
+          <circle cx="12" cy="12" r="1.7" />
+          <circle cx="19" cy="12" r="1.7" />
+        </svg>
+      </button>
+
+      {menuOpen && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={closeMenu} />
+          <div className="absolute right-3 top-12 z-20 w-44 rounded-xl border border-line bg-surface p-1 shadow-soft">
+            {confirming ? (
+              <>
+                <div className="px-3 py-2 text-sm font-medium text-ink">Delete this trip?</div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onDelete(trip.id);
+                    closeMenu();
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50"
+                >
+                  Yes, delete
+                </button>
+                <button
+                  type="button"
+                  onClick={closeMenu}
+                  className="w-full rounded-lg px-3 py-2 text-left text-sm text-graphite hover:bg-surface-2"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirming(true)}
+                className="w-full rounded-lg px-3 py-2 text-left text-sm text-graphite hover:bg-surface-2"
+              >
+                Delete
+              </button>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function Select({
+  value,
+  onChange,
+  children,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="rounded-full border border-line bg-surface px-4 py-2 font-mono text-xs text-graphite outline-none hover:border-line-strong focus:border-ink"
     >
-      <PlacePhoto query={destination} fallback="🌆" className="h-40 w-full object-cover" />
-      <div className="flex flex-col gap-1 p-4">
-        <h3 className="font-semibold leading-tight text-foreground group-hover:underline">
-          {destination}
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          {days ? `${days} days` : 'Trip'}
-          {budget ? ` · ${budget}` : ''}
-        </p>
-      </div>
-    </Link>
+      {children}
+    </select>
   );
 }
 
 function MyTrips() {
   const user = useAuthUser();
+  const navigate = useNavigate();
   const [trips, setTrips] = useState<TripDoc[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<SortKey>('new');
+  const [filterBudget, setFilterBudget] = useState('all');
 
   useEffect(() => {
     const load = async () => {
@@ -54,37 +160,91 @@ function MyTrips() {
     load();
   }, [user]);
 
+  const handleDelete = async (id: string) => {
+    const prev = trips;
+    setTrips((t) => t.filter((x) => x.id !== id)); // optimistic
+    try {
+      await deleteTrip(id);
+      toast.success('Trip deleted.');
+    } catch (err) {
+      console.error('[deleteTrip]', err);
+      setTrips(prev); // roll back
+      toast.error('Could not delete the trip.');
+    }
+  };
+
+  const visible = useMemo(() => {
+    let list = trips;
+    if (filterBudget !== 'all') {
+      list = list.filter((t) => t.userSelection?.budget === filterBudget);
+    }
+    const sorted = [...list];
+    if (sortBy === 'new') sorted.sort((a, b) => Number(b.id) - Number(a.id));
+    else if (sortBy === 'old') sorted.sort((a, b) => Number(a.id) - Number(b.id));
+    else if (sortBy === 'name')
+      sorted.sort((a, b) =>
+        (a.tripData?.destination ?? '').localeCompare(b.tripData?.destination ?? ''),
+      );
+    return sorted;
+  }, [trips, sortBy, filterBudget]);
+
   if (!user) {
     return (
-      <div className="mx-auto max-w-5xl px-5 py-20 text-center">
-        <h1 className="text-2xl font-bold">My Trips</h1>
-        <p className="mt-2 text-muted-foreground">Sign in to view the trips you've generated.</p>
+      <div className="mx-auto max-w-[min(1600px,92vw)] px-6 py-20 text-center">
+        <h1 className="font-display text-2xl font-semibold">My trips</h1>
+        <p className="mt-2 text-muted2">Sign in to view the trips you've generated.</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8">
-      <h1 className="mb-6 text-3xl font-bold tracking-tight">My Trips</h1>
+    <div className="mx-auto max-w-[min(1600px,92vw)] px-6 pb-24">
+      <div className="flex flex-wrap items-end justify-between gap-4 pt-15 pb-9">
+        <div>
+          <span className="eyebrow">Saved</span>
+          <h1 className="mt-1.5 mb-2 font-display text-[clamp(2.1rem,4.5vw,3.1rem)] font-semibold tracking-[-0.035em]">
+            My trips
+          </h1>
+          <p className="text-muted2">
+            {isLoading
+              ? 'Loading your trips...'
+              : trips.length === 0
+                ? 'No itineraries yet. Plan your first one.'
+                : `${trips.length} ${trips.length === 1 ? 'itinerary' : 'itineraries'}, ready when you are.`}
+          </p>
+        </div>
 
-      {isLoading ? (
-        <p className="text-muted-foreground">Loading your trips…</p>
-      ) : trips.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-10 text-center">
-          <p className="text-muted-foreground">You haven't generated any trips yet.</p>
-          <Link
-            to="/create-trip"
-            className="mt-4 inline-block rounded-md bg-slate-900 px-4 py-2 text-sm text-white hover:bg-slate-800"
-          >
-            Plan a trip
-          </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {trips.map((trip) => (
-            <TripCard key={trip.id} trip={trip} />
-          ))}
-        </div>
+        {trips.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            <Select value={filterBudget} onChange={setFilterBudget}>
+              <option value="all">All budgets</option>
+              {SELECT_BUDGET_OPTIONS.map((b) => (
+                <option key={b.id} value={b.title}>
+                  {b.title}
+                </option>
+              ))}
+            </Select>
+            <Select value={sortBy} onChange={(v) => setSortBy(v as SortKey)}>
+              <option value="new">Newest first</option>
+              <option value="old">Oldest first</option>
+              <option value="name">Destination A–Z</option>
+            </Select>
+          </div>
+        )}
+      </div>
+
+      <div className="trips-grid">
+        {visible.map((trip) => (
+          <TripCard key={trip.id} trip={trip} onDelete={handleDelete} />
+        ))}
+        <button type="button" className="new-trip" onClick={() => navigate('/create-trip')}>
+          <span className="plus">+</span>
+          Plan a new trip
+        </button>
+      </div>
+
+      {!isLoading && trips.length > 0 && visible.length === 0 && (
+        <p className="mt-8 text-center text-muted2">No trips match this filter.</p>
       )}
     </div>
   );
