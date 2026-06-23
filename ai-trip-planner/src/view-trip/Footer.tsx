@@ -1,13 +1,13 @@
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-border pt-8 pb-4 text-center">
-      <p className="text-sm font-semibold text-foreground">AI Trip Planner</p>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Itineraries are AI-generated suggestions: double-check hours, prices, and bookings before you go.
-      </p>
-      <p className="mt-3 text-xs text-muted-foreground">
-        © {new Date().getFullYear()} AI Trip Planner. Built with Gemini & Google Maps.
-      </p>
+    <footer className="mx-auto mt-20 max-w-[min(1600px,92vw)] border-t border-line px-6 pt-8.5 text-center text-muted2">
+      <div className="font-display text-[1.02rem] font-medium tracking-[-0.02em] text-graphite">
+        Itineraries are drafts, not gospel.
+      </div>
+      <div className="mt-2 font-mono text-[0.72rem] tracking-[0.04em]">
+        DOUBLE-CHECK HOURS, PRICES &amp; BOOKINGS · © {new Date().getFullYear()} WAYFARE · BUILT
+        WITH GEMINI + GOOGLE MAPS
+      </div>
     </footer>
   );
 }
