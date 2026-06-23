@@ -1,55 +1,66 @@
 import { PlacePhoto } from '@/components/custom/PlacePhoto';
 import type { Itinerary, TripUserSelection } from '@/types/itinerary';
+import { money } from './format';
 
 interface Props {
   trip: Itinerary;
   selection: TripUserSelection;
 }
 
-function Pill({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-sm font-medium text-foreground/80">
-      {children}
-    </span>
-  );
+function pace(days: number, stops: number): string {
+  if (!days) return 'Easy';
+  const perDay = stops / days;
+  if (perDay <= 4) return 'Easy';
+  if (perDay <= 6) return 'Balanced';
+  return 'Packed';
 }
 
 export function InfoSection({ trip, selection }: Props) {
-  const days = trip.days?.length ?? selection.noOfDays;
+  const days = trip.days?.length ?? (Number(selection.noOfDays) || 0);
+  const stops = trip.days?.reduce((sum, d) => sum + (d.items?.length ?? 0), 0) ?? 0;
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-border bg-card">
-      {/* Banner */}
-      <div className="relative h-56 w-full sm:h-72">
-        <PlacePhoto
-          query={trip.destination}
-          fallback="🌆"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/35" />
-        <div className="absolute bottom-0 left-0 p-6 sm:p-8">
-          <p className="text-sm font-medium text-white/80">Your itinerary</p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight text-white drop-shadow-sm sm:text-4xl">
-            {trip.destination}
-          </h1>
+    <>
+      <div className="hero-itin">
+        <PlacePhoto query={trip.destination} fallback="🌆" />
+        <div className="vig" />
+        <div className="cap">
+          <span className="eyebrow">Your itinerary</span>
+          <h1>{trip.destination}</h1>
+          <div className="coord">
+            {days} {days === 1 ? 'DAY' : 'DAYS'}
+            {selection.budget ? ` · ${selection.budget.toUpperCase()}` : ''}
+            {selection.traveler ? ` · ${selection.traveler.toUpperCase()}` : ''}
+          </div>
         </div>
       </div>
 
-      {/* Details */}
-      <div className="space-y-4 p-6 sm:p-8">
-        <p className="text-base leading-relaxed text-muted-foreground">{trip.tripSummary}</p>
-
-        <div className="flex flex-wrap gap-2">
-          <Pill>📅 {days} days</Pill>
-          {selection.budget && <Pill>💰 {selection.budget}</Pill>}
-          {selection.traveler && <Pill>🧳 {selection.traveler}</Pill>}
+      <div className="ticket">
+        <div className="left">
+          <span className="eyebrow">The brief</span>
+          <p>{trip.tripSummary}</p>
+          <div className="meta-chips">
+            <span className="chip">
+              {days} {days === 1 ? 'DAY' : 'DAYS'}
+            </span>
+            {selection.budget && <span className="chip">{selection.budget.toUpperCase()}</span>}
+            {selection.traveler && <span className="chip">{selection.traveler.toUpperCase()}</span>}
+            <span className="chip">{stops} STOPS</span>
+          </div>
+        </div>
+        <div className="stub">
+          <div>
+            <div className="lab">Pace</div>
+            <div className="val">{pace(days, stops)}</div>
+          </div>
           {trip.estimatedTotalCost != null && (
-            <Pill>
-              ~{trip.currency} {trip.estimatedTotalCost.toLocaleString()} total
-            </Pill>
+            <div className="total">
+              <div className="lab">Trip total</div>
+              <div className="val">{money(trip.currency, trip.estimatedTotalCost)}</div>
+            </div>
           )}
         </div>
       </div>
-    </section>
+    </>
   );
 }

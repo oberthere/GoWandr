@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 import type { TripDoc } from '@/types/itinerary';
 
@@ -20,4 +20,11 @@ export async function getUserTrips(email: string): Promise<TripDoc[]> {
   const trips = snap.docs.map((d) => d.data() as TripDoc);
   // id is a timestamp string, so sorting desc gives newest first.
   return trips.sort((a, b) => Number(b.id) - Number(a.id));
+}
+
+/**
+ * Deletes a trip by its Firestore document id.
+ */
+export async function deleteTrip(id: string): Promise<void> {
+  await deleteDoc(doc(db, 'AITrips', id));
 }
