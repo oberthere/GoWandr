@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
-import { getPhotoUrl, getPlaceDetails } from '@/service/GlobalApi';
+import { getPhotoUrl, getPlaceDetails, pickBestPhoto } from '@/service/GlobalApi';
 
 interface Props {
   query: string;
+  /** Tried if `query` returns no usable photo (e.g. a "skyline"-biased query). */
+  fallbackQuery?: string;
   className?: string;
   /** Emoji or text shown while loading or when no photo is found. */
   fallback?: string;
+  /** Requested image width; larger for heroes, smaller for thumbnails. */
+  maxWidthPx?: number;
 }
 
-export function PlacePhoto({ query, className, fallback = '📍' }: Props) {
+export function PlacePhoto({ query, fallbackQuery, className, fallback = '📍', maxWidthPx }: Props) {
   const [url, setUrl] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -17,18 +21,31 @@ export function PlacePhoto({ query, className, fallback = '📍' }: Props) {
     setUrl(null);
     setFailed(false);
 
-    getPlaceDetails(query)
-      .then((res) => {
-        const photoName = res.data.places?.[0]?.photos?.[0]?.name;
-        if (active && photoName) setUrl(getPhotoUrl(photoName));
-        else if (active) setFailed(true);
-      })
-      .catch(() => active && setFailed(true));
+    // Try the (possibly biased) query first, then the plain fallback, so a
+    // "<city> skyline" search that comes back empty still yields a city photo.
+    const queries = fallbackQuery && fallbackQuery !== query ? [query, fallbackQuery] : [query];
+
+    (async () => {
+      for (const q of queries) {
+        try {
+          const res = await getPlaceDetails(q);
+          const photoName = pickBestPhoto(res.data.places?.[0]?.photos);
+          if (!active) return;
+          if (photoName) {
+            setUrl(getPhotoUrl(photoName, maxWidthPx));
+            return;
+          }
+        } catch {
+          /* try the next query */
+        }
+      }
+      if (active) setFailed(true);
+    })();
 
     return () => {
       active = false;
     };
-  }, [query]);
+  }, [query, fallbackQuery, maxWidthPx]);
 
   if (url && !failed) {
     return (

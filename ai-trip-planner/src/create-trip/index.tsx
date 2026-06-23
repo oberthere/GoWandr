@@ -109,7 +109,7 @@ function CreateTrip() {
   };
 
   return (
-    <div className="mx-auto max-w-[min(1600px,92vw)] px-6 pb-24">
+    <div className="mx-auto max-w-[min(1600px,92vw)] px-6 pb-8">
       {/* Plan head */}
       <div className="max-w-165 pt-16 pb-10">
         <span className="eyebrow">Build a trip</span>
@@ -144,6 +144,7 @@ function CreateTrip() {
           <div className="mb-3.5 text-[0.9rem] text-muted2">We'll pace it for you.</div>
           <Input
             placeholder="e.g. 3"
+            className="h-13 px-4 text-[1.05rem] md:text-[1.05rem]"
             type="number"
             min={1}
             max={MAX_TRIP_DAYS}
@@ -206,10 +207,10 @@ function CreateTrip() {
         <Button
           onClick={onGenerateTrip}
           disabled={isLoading || isSaving}
-          className="inline-flex items-center gap-2.5 rounded-full bg-ink px-7.5 py-3.75 text-base font-semibold text-white transition hover:bg-black"
+          className="inline-flex items-center gap-3 rounded-full bg-ink px-11 py-5 text-[1.15rem] font-semibold text-white transition hover:bg-black"
         >
           {isSaving ? 'Saving...' : isLoading ? 'Drafting...' : 'Draft my itinerary'}
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </Button>
