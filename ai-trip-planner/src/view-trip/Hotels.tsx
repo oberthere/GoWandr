@@ -1,11 +1,28 @@
 import { PlacePhoto } from '@/components/custom/PlacePhoto';
 import type { HotelOption } from '@/types/itinerary';
+import { useCurrency } from './CurrencyContext';
 
 interface Props {
   hotels: HotelOption[];
 }
 
+// Hotel prices arrive as freeform strings (e.g. "40000 ISK/night"). Pull out the
+// numeric amount (assumed to be in the trip's native currency) so it can follow
+// the USD/native toggle; fall back to the raw string if it can't be parsed.
+function parseNativePrice(raw: string): { amount: number; perNight: boolean } | null {
+  const m = raw.match(/(\d[\d,]*(?:\.\d+)?)\s*([kKmM])?/);
+  if (!m) return null;
+  let amount = parseFloat(m[1].replace(/,/g, ''));
+  if (Number.isNaN(amount)) return null;
+  const unit = m[2]?.toLowerCase();
+  if (unit === 'k') amount *= 1_000;
+  else if (unit === 'm') amount *= 1_000_000;
+  return { amount, perNight: /night|nightly/i.test(raw) };
+}
+
 function HotelCard({ hotel }: { hotel: HotelOption }) {
+  const cur = useCurrency();
+  const parsed = hotel.pricePerNight ? parseNativePrice(hotel.pricePerNight) : null;
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     `${hotel.hotelName} ${hotel.hotelAddress}`,
   )}`;
@@ -20,7 +37,9 @@ function HotelCard({ hotel }: { hotel: HotelOption }) {
         <h4>{hotel.hotelName}</h4>
         <div className="desc">{hotel.description}</div>
         {hotel.pricePerNight && (
-          <div className="price">{hotel.pricePerNight}</div>
+          <div className="price">
+            {parsed ? `${cur.format(parsed.amount)}${parsed.perNight ? '/night' : ''}` : hotel.pricePerNight}
+          </div>
         )}
       </div>
     </a>

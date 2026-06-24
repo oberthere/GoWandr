@@ -1,6 +1,6 @@
 import { PlacePhoto } from '@/components/custom/PlacePhoto';
 import type { Itinerary, TripUserSelection } from '@/types/itinerary';
-import { money } from './format';
+import { useCurrency } from './CurrencyContext';
 
 interface Props {
   trip: Itinerary;
@@ -16,22 +16,23 @@ function pace(days: number, stops: number): string {
 }
 
 export function InfoSection({ trip, selection }: Props) {
+  const cur = useCurrency();
   const days = trip.days?.length ?? (Number(selection.noOfDays) || 0);
   const stops = trip.days?.reduce((sum, d) => sum + (d.items?.length ?? 0), 0) ?? 0;
 
   return (
     <>
       <div className="hero-itin">
-        <PlacePhoto query={trip.destination} fallback="🌆" />
+        <PlacePhoto
+          query={`${trip.destination} skyline`}
+          fallbackQuery={trip.destination}
+          fallback="🌆"
+          maxWidthPx={1600}
+        />
         <div className="vig" />
         <div className="cap">
           <span className="eyebrow">Your itinerary</span>
           <h1>{trip.destination}</h1>
-          <div className="coord">
-            {days} {days === 1 ? 'DAY' : 'DAYS'}
-            {selection.budget ? ` · ${selection.budget.toUpperCase()}` : ''}
-            {selection.traveler ? ` · ${selection.traveler.toUpperCase()}` : ''}
-          </div>
         </div>
       </div>
 
@@ -56,7 +57,29 @@ export function InfoSection({ trip, selection }: Props) {
           {trip.estimatedTotalCost != null && (
             <div className="total">
               <div className="lab">Trip total</div>
-              <div className="val">{money(trip.currency, trip.estimatedTotalCost)}</div>
+              <div className="val">{cur.format(trip.estimatedTotalCost)}</div>
+              {cur.canConvert && (
+                <div className="mt-2 inline-flex rounded-full border border-line bg-surface-2 p-0.5 font-mono text-[0.66rem]">
+                  <button
+                    type="button"
+                    onClick={() => cur.setDisplay('usd')}
+                    className={`rounded-full px-2.5 py-1 transition-colors ${
+                      cur.display === 'usd' ? 'bg-ink text-white' : 'text-muted2 hover:text-ink'
+                    }`}
+                  >
+                    USD
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => cur.setDisplay('native')}
+                    className={`rounded-full px-2.5 py-1 transition-colors ${
+                      cur.display === 'native' ? 'bg-ink text-white' : 'text-muted2 hover:text-ink'
+                    }`}
+                  >
+                    {cur.native}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

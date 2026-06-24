@@ -1,13 +1,13 @@
 import { PlacePhoto } from '@/components/custom/PlacePhoto';
 import type { ItineraryDay, ItineraryItem } from '@/types/itinerary';
-import { money } from './format';
+import { useCurrency } from './CurrencyContext';
 
 interface Props {
   days: ItineraryDay[];
-  currency: string;
 }
 
-function StopCard({ item, currency }: { item: ItineraryItem; currency: string }) {
+function StopCard({ item }: { item: ItineraryItem }) {
+  const cur = useCurrency();
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     item.placesQuery || item.name,
   )}`;
@@ -27,7 +27,7 @@ function StopCard({ item, currency }: { item: ItineraryItem; currency: string })
           <div className="facts">
             {item.durationMinutes > 0 && <span className="fact">⏱ {item.durationMinutes} min</span>}
             {item.estimatedCost > 0 ? (
-              <span className="fact cost">{money(currency, item.estimatedCost)}</span>
+              <span className="fact cost">{cur.format(item.estimatedCost)}</span>
             ) : (
               <span className="fact cost">FREE</span>
             )}
@@ -38,7 +38,8 @@ function StopCard({ item, currency }: { item: ItineraryItem; currency: string })
   );
 }
 
-export function DailyPlan({ days, currency }: Props) {
+export function DailyPlan({ days }: Props) {
+  const cur = useCurrency();
   if (!days?.length) return null;
 
   return (
@@ -55,7 +56,7 @@ export function DailyPlan({ days, currency }: Props) {
               <span className="d">Day {String(day.day).padStart(2, '0')}</span>
               <h4>{day.theme}</h4>
               <span className="sum">
-                ~{money(currency, day.dailyEstimatedCost)} · {stops} stops
+                ~{cur.format(day.dailyEstimatedCost)} · {stops} stops
               </span>
             </div>
             <div className="timeline">
@@ -63,7 +64,7 @@ export function DailyPlan({ days, currency }: Props) {
                 ?.slice()
                 .sort((a, b) => a.order - b.order)
                 .map((item, i) => (
-                  <StopCard key={i} item={item} currency={currency} />
+                  <StopCard key={i} item={item} />
                 ))}
             </div>
           </div>

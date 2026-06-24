@@ -3,10 +3,10 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { getTripById } from '@/service/Trips';
 import type { TripDoc } from '@/types/itinerary';
+import { CurrencyProvider } from './CurrencyContext';
 import { InfoSection } from './InfoSection';
 import { Hotels } from './Hotels';
 import { DailyPlan } from './DailyPlan';
-import { Footer } from './Footer';
 
 function ViewTrip() {
   const { tripId } = useParams<{ tripId: string }>();
@@ -55,7 +55,7 @@ function ViewTrip() {
   }
 
   return (
-    <>
+    <CurrencyProvider native={trip.tripData.currency}>
       <div className="mx-auto max-w-[min(1600px,92vw)] px-6 pb-24">
         <div className="backbar">
           <button type="button" className="back" onClick={goBack}>
@@ -66,10 +66,9 @@ function ViewTrip() {
 
         <InfoSection trip={trip.tripData} selection={trip.userSelection} />
         <Hotels hotels={trip.tripData.hotelOptions} />
-        <DailyPlan days={trip.tripData.days} currency={trip.tripData.currency} />
+        <DailyPlan days={trip.tripData.days} />
       </div>
-      <Footer />
-    </>
+    </CurrencyProvider>
   );
 }
 
