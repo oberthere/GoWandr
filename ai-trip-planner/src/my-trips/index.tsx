@@ -32,7 +32,7 @@ function TripCard({ trip, onDelete }: { trip: TripDoc; onDelete: (id: string) =>
         onClick={() => navigate(`/view-trip/${trip.id}`, { state: { from: 'trips' } })}
       >
         <div className="ph">
-          <PlacePhoto query={destination} fallback="🌆" />
+          <PlacePhoto query={`${destination} skyline`} fallbackQuery={destination} fallback="🌆" />
           {badge && <span className="badge">{badge}</span>}
         </div>
         <div className="tbody">
@@ -202,7 +202,7 @@ function MyTrips() {
       <div className="flex flex-wrap items-end justify-between gap-4 pt-15 pb-9">
         <div>
           <span className="eyebrow">Saved</span>
-          <h1 className="mt-1.5 mb-2 font-display text-[clamp(2.1rem,4.5vw,3.1rem)] font-semibold tracking-[-0.035em]">
+          <h1 className="mt-1.5 mb-2 font-display text-[clamp(2.3rem,5vw,3.5rem)] font-medium tracking-[-0.03em]">
             My trips
           </h1>
           <p className="text-muted2">
