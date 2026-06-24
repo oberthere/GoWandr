@@ -1,9 +1,9 @@
 import type { BudgetOption, TravelerOption } from './types';
 
 export const SELECT_BUDGET_OPTIONS: BudgetOption[] = [
-  { id: 1, title: 'Shoestring',  desc: 'Stay sharp on costs.',        icon: 'wallet' },
-  { id: 2, title: 'Comfortable', desc: 'Balanced, mid-range picks.',  icon: 'home'   },
-  { id: 3, title: 'No limits',   desc: 'The best of everything.',     icon: 'star'   },
+  { id: 1, title: 'Shoestring',  desc: 'Cheapest: free sights, street food, transit.', icon: 'wallet' },
+  { id: 2, title: 'Comfortable', desc: 'Mid-range: balanced picks, the odd splurge.',  icon: 'home'   },
+  { id: 3, title: 'No limits',   desc: 'Premium: the best of everything, price aside.', icon: 'star'   },
 ];
 
 export const SELECT_TRAVEL_LIST: TravelerOption[] = [
