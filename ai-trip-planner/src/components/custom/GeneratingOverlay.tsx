@@ -40,7 +40,7 @@ export function GeneratingOverlay({ open }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-canvas/90 backdrop-blur-md">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-canvas/90 backdrop-blur-md">
       <div className="flex max-w-85 flex-col items-center gap-4 p-6 text-center">
         <div className="h-10.5 w-10.5 animate-spin rounded-full border-2 border-line-strong border-t-ink" />
         <div className="font-display text-[1.3rem] font-semibold tracking-[-0.025em]">
