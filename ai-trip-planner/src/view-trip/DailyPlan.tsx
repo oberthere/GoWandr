@@ -22,10 +22,14 @@ function StopCard({ item }: { item: ItineraryItem }) {
         </div>
         <div className="c">
           <span className="kicker">{item.type}</span>
-          <h5>{item.name}</h5>
+          <h4>{item.name}</h4>
           <p>{item.description}</p>
           <div className="facts">
-            {item.durationMinutes > 0 && <span className="fact">⏱ {item.durationMinutes} min</span>}
+            {item.durationMinutes > 0 && (
+              <span className="fact">
+                <span aria-hidden="true">⏱</span> {item.durationMinutes} min
+              </span>
+            )}
             {item.estimatedCost > 0 ? (
               <span className="fact cost">{cur.format(item.estimatedCost)}</span>
             ) : (
@@ -33,6 +37,7 @@ function StopCard({ item }: { item: ItineraryItem }) {
             )}
           </div>
         </div>
+        <span className="sr-only"> (opens in new tab)</span>
       </a>
     </div>
   );
@@ -45,7 +50,7 @@ export function DailyPlan({ days }: Props) {
   return (
     <div className="section">
       <div className="sec-head">
-        <h3>The day, hour by hour</h3>
+        <h2>The day, hour by hour</h2>
       </div>
 
       {days.map((day) => {
@@ -54,7 +59,7 @@ export function DailyPlan({ days }: Props) {
           <div key={day.day}>
             <div className="day-label">
               <span className="d">Day {String(day.day).padStart(2, '0')}</span>
-              <h4>{day.theme}</h4>
+              <h3>{day.theme}</h3>
               <span className="sum">
                 ~{cur.format(day.dailyEstimatedCost)} · {stops} stops
               </span>

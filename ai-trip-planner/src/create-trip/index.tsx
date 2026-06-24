@@ -117,7 +117,7 @@ function CreateTrip() {
           Tell us how you like to{' '}
           <span className="border-b-[3px] border-ink pb-px">travel.</span>
         </h1>
-        <p className="max-w-[48ch] text-[1.08rem] text-graphite">
+        <p className="max-w-[48ch] text-[1.08rem] leading-relaxed text-graphite">
           A few details is all it takes. We'll draft a day-by-day plan with places to stay, eat,
           and explore, costed and timed.
         </p>
@@ -126,11 +126,15 @@ function CreateTrip() {
       {/* Destination + days */}
       <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-[2fr_1fr]">
         <div className="mb-9">
-          <label className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]">
+          <label
+            htmlFor="destination"
+            className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]"
+          >
             Where to?
           </label>
           <div className="mb-3.5 text-[0.9rem] text-muted2">A city, a region, or a whole country.</div>
           <PlacesAutocomplete
+            id="destination"
             onChange={(v) => {
               if (v) handleInputChange('location', v);
             }}
@@ -138,11 +142,15 @@ function CreateTrip() {
           />
         </div>
         <div className="mb-9">
-          <label className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]">
+          <label
+            htmlFor="days"
+            className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]"
+          >
             How many days?
           </label>
           <div className="mb-3.5 text-[0.9rem] text-muted2">We'll pace it for you.</div>
           <Input
+            id="days"
             placeholder="e.g. 3"
             className="h-13 px-4 text-[1.05rem] md:text-[1.05rem]"
             type="number"
@@ -162,13 +170,16 @@ function CreateTrip() {
 
       {/* Budget */}
       <div className="mb-9">
-        <label className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]">
+        <div
+          id="budget-label"
+          className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]"
+        >
           What's the budget like?
-        </label>
+        </div>
         <div className="mb-3.5 text-[0.9rem] text-muted2">
           Sets the tier for stays, food, and activities.
         </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" role="group" aria-labelledby="budget-label">
           {SELECT_BUDGET_OPTIONS.map((item) => (
             <OptionCard
               key={item.id}
@@ -184,11 +195,14 @@ function CreateTrip() {
 
       {/* Traveler */}
       <div className="mb-9">
-        <label className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]">
+        <div
+          id="traveler-label"
+          className="mb-1 block font-display text-[1.2rem] font-semibold tracking-[-0.02em]"
+        >
           Who's coming along?
-        </label>
+        </div>
         <div className="mb-3.5 text-[0.9rem] text-muted2">Shapes the pace and the picks.</div>
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" role="group" aria-labelledby="traveler-label">
           {SELECT_TRAVEL_LIST.map((item) => (
             <OptionCard
               key={item.id}
@@ -210,7 +224,7 @@ function CreateTrip() {
           className="inline-flex items-center gap-3 rounded-full bg-ink px-11 py-5 text-[1.15rem] font-semibold text-white transition hover:bg-black"
         >
           {isSaving ? 'Saving...' : isLoading ? 'Drafting...' : 'Draft my itinerary'}
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </Button>

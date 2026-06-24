@@ -55,7 +55,10 @@ function OptionCard({ icon, title, desc, selected, onClick }: OptionCardProps) {
       }`}
     >
       {selected && (
-        <span className="absolute right-3.5 top-3.5 grid h-5 w-5 place-items-center rounded-full bg-ink text-[0.7rem] text-white">
+        <span
+          aria-hidden="true"
+          className="absolute right-3.5 top-3.5 grid h-5 w-5 place-items-center rounded-full bg-ink text-[0.7rem] text-white"
+        >
           ✓
         </span>
       )}
@@ -65,11 +68,12 @@ function OptionCard({ icon, title, desc, selected, onClick }: OptionCardProps) {
         fill="none"
         stroke="currentColor"
         strokeWidth="1.6"
+        aria-hidden="true"
       >
         {ICONS[icon] ?? ICONS.star}
       </svg>
-      <h4 className="mb-0.75 text-base font-semibold tracking-[-0.01em]">{title}</h4>
-      <span className="block text-[0.82rem] leading-snug text-muted2">{desc}</span>
+      <span className="mb-0.75 block text-base font-semibold tracking-[-0.01em]">{title}</span>
+      <span className="block text-[0.82rem] leading-normal text-muted2">{desc}</span>
     </button>
   );
 }

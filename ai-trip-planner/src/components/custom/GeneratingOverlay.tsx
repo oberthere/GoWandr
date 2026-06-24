@@ -40,9 +40,17 @@ export function GeneratingOverlay({ open }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-canvas/90 backdrop-blur-md">
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center bg-canvas/90 backdrop-blur-md"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
       <div className="flex max-w-85 flex-col items-center gap-4 p-6 text-center">
-        <div className="h-10.5 w-10.5 animate-spin rounded-full border-2 border-line-strong border-t-ink" />
+        <div
+          className="h-10.5 w-10.5 animate-spin rounded-full border-2 border-line-strong border-t-ink"
+          aria-hidden="true"
+        />
         <div className="font-display text-[1.3rem] font-semibold tracking-[-0.025em]">
           Drafting your trip
         </div>
@@ -52,7 +60,10 @@ export function GeneratingOverlay({ open }: Props) {
         >
           {STEPS[stepIndex]}
         </div>
-        <div className="mt-1 h-0.75 w-50 overflow-hidden rounded-full bg-surface-2">
+        <div
+          className="mt-1 h-0.75 w-50 overflow-hidden rounded-full bg-surface-2"
+          aria-hidden="true"
+        >
           <div className="h-full w-2/5 animate-[slide_1.4s_ease-in-out_infinite] rounded-full bg-ink" />
         </div>
       </div>

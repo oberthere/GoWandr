@@ -31,10 +31,15 @@ function HotelCard({ hotel }: { hotel: HotelOption }) {
     <a className="hotel" href={mapsUrl} target="_blank" rel="noreferrer">
       <div className="ph">
         <PlacePhoto query={`${hotel.hotelName} ${hotel.hotelAddress}`} fallback="🏨" />
-        {hotel.rating != null && <span className="star">★ {hotel.rating}</span>}
+        {hotel.rating != null && (
+          <span className="star">
+            <span aria-hidden="true">★</span> {hotel.rating}
+            <span className="sr-only"> out of 5 rating</span>
+          </span>
+        )}
       </div>
       <div className="body">
-        <h4>{hotel.hotelName}</h4>
+        <h3>{hotel.hotelName}</h3>
         <div className="desc">{hotel.description}</div>
         {hotel.pricePerNight && (
           <div className="price">
@@ -42,6 +47,7 @@ function HotelCard({ hotel }: { hotel: HotelOption }) {
           </div>
         )}
       </div>
+      <span className="sr-only"> (opens in new tab)</span>
     </a>
   );
 }
@@ -52,7 +58,7 @@ export function Hotels({ hotels }: Props) {
   return (
     <div className="section">
       <div className="sec-head">
-        <h3>Where to stay</h3>
+        <h2>Where to stay</h2>
       </div>
       <div className="hotels">
         {hotels.map((hotel, i) => (

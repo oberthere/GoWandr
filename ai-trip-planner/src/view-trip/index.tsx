@@ -39,7 +39,10 @@ function ViewTrip() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-[min(1600px,92vw)] px-6 py-20 text-center font-mono text-sm text-muted2">
+      <div
+        role="status"
+        className="mx-auto max-w-[min(1600px,92vw)] px-6 py-20 text-center font-mono text-sm text-muted2"
+      >
         Loading your trip...
       </div>
     );
@@ -49,7 +52,7 @@ function ViewTrip() {
     return (
       <div className="mx-auto max-w-[min(1600px,92vw)] px-6 py-20 text-center">
         <h1 className="font-display text-2xl font-semibold">Trip not found</h1>
-        <p className="mt-2 text-muted2">This trip may have been removed or the link is incorrect.</p>
+        <p className="mt-2 leading-relaxed text-muted2">This trip may have been removed or the link is incorrect.</p>
       </div>
     );
   }
@@ -59,9 +62,11 @@ function ViewTrip() {
       <div className="mx-auto max-w-[min(1600px,92vw)] px-6 pb-24">
         <div className="backbar">
           <button type="button" className="back" onClick={goBack}>
-            ← <span>{backLabel}</span>
+            <span aria-hidden="true">←</span> <span>{backLabel}</span>
           </button>
-          <span className="save-pill">✓ Saved to my trips</span>
+          <span className="save-pill">
+            <span aria-hidden="true">✓</span> Saved to my trips
+          </span>
         </div>
 
         <InfoSection trip={trip.tripData} selection={trip.userSelection} />

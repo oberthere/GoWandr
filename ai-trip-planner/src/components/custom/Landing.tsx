@@ -4,7 +4,7 @@ import { MARQUEE_ROW_1, MARQUEE_ROW_2 } from './destinations';
 
 function Arrow() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path d="M5 12h14M13 6l6 6-6 6" />
     </svg>
   );
@@ -42,7 +42,7 @@ export function Landing() {
             planned in a minute.
           </span>
         </h1>
-        <p className="mx-auto mt-5.5 max-w-[56ch] text-[clamp(1.05rem,2vw,1.22rem)] text-graphite">
+        <p className="mx-auto mt-5.5 max-w-[56ch] text-[clamp(1.05rem,2vw,1.22rem)] leading-relaxed text-graphite">
           Tell us where you're going, how long, your budget, and who's coming. We'll draft a
           day-by-day itinerary: where to stay, eat, and explore, each stop timed and costed. A
           beach, a megacity, or a town no one's heard of.
@@ -95,7 +95,7 @@ export function Landing() {
         <h2 className="mb-2 font-display text-[clamp(2rem,4.4vw,3.1rem)] font-medium leading-[1.04] tracking-[-0.035em]">
           Where to first?
         </h2>
-        <p className="mx-auto mb-6.5 max-w-[46ch] text-[1.05rem] text-white/70">
+        <p className="mx-auto mb-6.5 max-w-[46ch] text-[1.05rem] leading-relaxed text-white/70">
           Your first itinerary takes about thirty seconds, and costs nothing.
         </p>
         <button

@@ -59,10 +59,15 @@ export function InfoSection({ trip, selection }: Props) {
               <div className="lab">Trip total</div>
               <div className="val">{cur.format(trip.estimatedTotalCost)}</div>
               {cur.canConvert && (
-                <div className="mt-2 inline-flex rounded-full border border-line bg-surface-2 p-0.5 font-mono text-[0.66rem]">
+                <div
+                  role="group"
+                  aria-label="Display currency"
+                  className="mt-2 inline-flex rounded-full border border-line bg-surface-2 p-0.5 font-mono text-[0.66rem]"
+                >
                   <button
                     type="button"
                     onClick={() => cur.setDisplay('usd')}
+                    aria-pressed={cur.display === 'usd'}
                     className={`rounded-full px-2.5 py-1 transition-colors ${
                       cur.display === 'usd' ? 'bg-ink text-white' : 'text-muted2 hover:text-ink'
                     }`}
@@ -72,6 +77,7 @@ export function InfoSection({ trip, selection }: Props) {
                   <button
                     type="button"
                     onClick={() => cur.setDisplay('native')}
+                    aria-pressed={cur.display === 'native'}
                     className={`rounded-full px-2.5 py-1 transition-colors ${
                       cur.display === 'native' ? 'bg-ink text-white' : 'text-muted2 hover:text-ink'
                     }`}
