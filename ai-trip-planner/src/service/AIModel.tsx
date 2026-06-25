@@ -6,10 +6,9 @@ const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_GEMINI_API_KEY)
 // faster but produces noticeably thinner itineraries.
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-// `thinkingConfig` isn't in this SDK's types yet, but the Gemini API honours it
-// and the SDK forwards generationConfig as-is. thinkingBudget is the speed/quality
-// dial: 0 = fastest but less reasoned, higher = smarter planning but slower.
-// A modest budget keeps multi-day trips sensible without the full latency hit.
+// `thinkingConfig` isn't in this SDK's types yet, but the API accepts it and the
+// SDK forwards generationConfig as-is. thinkingBudget is the speed/quality dial:
+// 0 = fastest but less reasoned, higher = smarter but slower.
 const generationConfig = {
   temperature: 1,
   topP: 0.95,

@@ -1,8 +1,6 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB444A4NvWMrWkoZE3vTheI9sihS9BVsNM",
   authDomain: "ai-planner-app-b1051.firebaseapp.com",
@@ -13,6 +11,5 @@ const firebaseConfig = {
   measurementId: "G-88SRJBKED2"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);

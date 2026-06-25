@@ -100,7 +100,7 @@ export function PlacesAutocomplete({ onChange, placeholder, id }: Props) {
         const { AutocompleteSuggestion } = await loadPlacesLibrary();
         const { suggestions: results } = await AutocompleteSuggestion.fetchAutocompleteSuggestions({
           input: text,
-          // Destinations only — cities, regions/states, and countries.
+          // Destinations only: cities, regions/states, and countries.
           includedPrimaryTypes: ['locality', 'administrative_area_level_1', 'country'],
         });
         if (reqRef.current !== token) return;
@@ -197,7 +197,7 @@ export function PlacesAutocomplete({ onChange, placeholder, id }: Props) {
         placeholder={placeholder ?? 'Search destination...'}
         className="flex h-13 w-full rounded-lg border border-input bg-transparent px-4 py-2 text-[1.05rem] shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring"
       />
-      {/* Only render the listbox when it has options — an empty role="listbox"
+      {/* Only render the listbox when it has options; an empty role="listbox"
           violates the "required owned elements" rule (it must contain options). */}
       {isOpen && options.length > 0 && (
         <ul

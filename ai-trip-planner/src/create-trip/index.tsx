@@ -2,15 +2,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { GeneratingOverlay } from '@/components/custom/GeneratingOverlay';
 import { PlacesAutocomplete } from '@/components/ui/PlacesAutocomplete';
-import { chatSession } from '@/service/AIModel';
+import { generateItinerary } from '@/service/itinerary';
 import { getStoredUser } from '@/service/GoogleAuth';
 import { db } from '@/service/firebaseConfig';
+import type { Itinerary } from '@/types/itinerary';
 import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { MAX_TRIP_DAYS, SELECT_BUDGET_OPTIONS, SELECT_TRAVEL_LIST, buildPrompt } from './constants';
+import { MAX_TRIP_DAYS, SELECT_BUDGET_OPTIONS, SELECT_TRAVEL_LIST } from './constants';
 import OptionCard from './OptionCard';
 import { SignInDialog } from './SignInDialog';
 import type { TripFormData } from './types';
@@ -26,7 +27,7 @@ function CreateTrip() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const onSaveAiTrip = async (tripData: Record<string, unknown>): Promise<string | undefined> => {
+  const onSaveAiTrip = async (tripData: Itinerary): Promise<string | undefined> => {
     const user = getStoredUser();
     if (!user) return undefined;
 
@@ -53,20 +54,14 @@ function CreateTrip() {
     const { location, noOfDays, budget, traveler } = formData;
     if (!location || !noOfDays || !budget || !traveler) return;
 
-    const prompt = buildPrompt({
-      location: location.label,
-      days: noOfDays,
-      budget,
-      travelers: traveler,
-    });
-
     setIsLoading(true);
     try {
-      const result = await chatSession.sendMessage(prompt);
-      const raw = result.response.text();
-      console.log('AI response:', raw);
-      const itinerary = JSON.parse(raw);
-      console.log(itinerary);
+      const itinerary = await generateItinerary({
+        location: location.label,
+        days: noOfDays,
+        budget,
+        travelers: traveler,
+      });
       setShowSignIn(false);
       const docId = await onSaveAiTrip(itinerary);
       toast.success('Your trip is ready!');

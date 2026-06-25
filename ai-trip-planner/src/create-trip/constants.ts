@@ -1,16 +1,65 @@
 import type { BudgetOption, TravelerOption } from './types';
 
 export const SELECT_BUDGET_OPTIONS: BudgetOption[] = [
-  { id: 1, title: 'Shoestring',  desc: 'Cheapest: free sights, street food, transit.', icon: 'wallet' },
-  { id: 2, title: 'Comfortable', desc: 'Mid-range: balanced picks, the odd splurge.',  icon: 'home'   },
-  { id: 3, title: 'No limits',   desc: 'Premium: the best of everything, price aside.', icon: 'star'   },
+  {
+    id: 1,
+    title: 'Shoestring',
+    desc: 'Cheapest: free sights, street food, transit.',
+    icon: 'wallet',
+    prompt:
+      'prioritize free/low-cost attractions, street food, public transit, budget eats. Keep daily spend low.',
+  },
+  {
+    id: 2,
+    title: 'Comfortable',
+    desc: 'Mid-range: balanced picks, the odd splurge.',
+    icon: 'home',
+    prompt:
+      'mix of paid attractions and free sights, mid-range sit-down restaurants, occasional taxi/rideshare.',
+  },
+  {
+    id: 3,
+    title: 'No limits',
+    desc: 'Premium: the best of everything, price aside.',
+    icon: 'star',
+    prompt:
+      'premium experiences, fine dining, private tours, no cost constraints. Recommend the best regardless of price.',
+  },
 ];
 
 export const SELECT_TRAVEL_LIST: TravelerOption[] = [
-  { id: 1, title: 'Solo',     desc: 'Just me, exploring.',     icon: 'solo',    people: '1 Person'      },
-  { id: 2, title: 'A couple', desc: 'Two, in tandem.',         icon: 'couple',  people: '2 People'      },
-  { id: 3, title: 'Family',   desc: 'Kids in tow.',            icon: 'home',    people: '3 to 5 People'  },
-  { id: 4, title: 'Friends',  desc: 'A crew of adventurers.',  icon: 'friends', people: '5 to 10 People' },
+  {
+    id: 1,
+    title: 'Solo',
+    desc: 'Just me, exploring.',
+    icon: 'solo',
+    people: '1 Person',
+    prompt: 'flexible solo-friendly spots, social/walkable areas, solo-dining-friendly restaurants.',
+  },
+  {
+    id: 2,
+    title: 'A couple',
+    desc: 'Two, in tandem.',
+    icon: 'couple',
+    people: '2 People',
+    prompt: 'romantic/scenic spots, intimate restaurants, sunset views, couple-oriented activities.',
+  },
+  {
+    id: 3,
+    title: 'Family',
+    desc: 'Kids in tow.',
+    icon: 'home',
+    people: '3 to 5 People',
+    prompt: 'kid-friendly attractions, relaxed pacing, family restaurants, accessible venues.',
+  },
+  {
+    id: 4,
+    title: 'Friends',
+    desc: 'A crew of adventurers.',
+    icon: 'friends',
+    people: '5 to 10 People',
+    prompt: 'group activities, nightlife, lively dining, fun/adventurous experiences.',
+  },
 ];
 
 export const MAX_TRIP_DAYS = 5;
@@ -25,15 +74,10 @@ TRIP PREFERENCES
 - Traveling as: {travelers}
 
 BUDGET GUIDANCE
-- "Shoestring": prioritize free/low-cost attractions, street food, public transit, budget eats. Keep daily spend low.
-- "Comfortable": mix of paid attractions and free sights, mid-range sit-down restaurants, occasional taxi/rideshare.
-- "No limits": premium experiences, fine dining, private tours, no cost constraints. Recommend the best regardless of price.
+{budgetGuidance}
 
 TRAVELER GUIDANCE
-- "Solo": flexible solo-friendly spots, social/walkable areas, solo-dining-friendly restaurants.
-- "A couple": romantic/scenic spots, intimate restaurants, sunset views, couple-oriented activities.
-- "Family": kid-friendly attractions, relaxed pacing, family restaurants, accessible venues.
-- "Friends": group activities, nightlife, lively dining, fun/adventurous experiences.
+{travelerGuidance}
 
 PLANNING RULES
 1. Plan 3-5 activities per day plus meal stops. Don't overpack.
@@ -91,10 +135,17 @@ export function buildPrompt(prefs: {
   travelers: string;
   startDate?: string;
 }): string {
+  // Built from the option lists so the guidance always matches what the form
+  // offers: renaming a title updates both the value and its guidance at once.
+  const budgetGuidance = SELECT_BUDGET_OPTIONS.map((o) => `- "${o.title}": ${o.prompt}`).join('\n');
+  const travelerGuidance = SELECT_TRAVEL_LIST.map((o) => `- "${o.title}": ${o.prompt}`).join('\n');
+
   return TRIP_PROMPT
-    .replaceAll('{location}',  prefs.location)
-    .replaceAll('{days}',      prefs.days)
-    .replaceAll('{startDate}', prefs.startDate ?? 'flexible')
-    .replaceAll('{budget}',    prefs.budget)
-    .replaceAll('{travelers}', prefs.travelers);
+    .replaceAll('{location}',         prefs.location)
+    .replaceAll('{days}',            prefs.days)
+    .replaceAll('{startDate}',       prefs.startDate ?? 'flexible')
+    .replaceAll('{budget}',          prefs.budget)
+    .replaceAll('{travelers}',       prefs.travelers)
+    .replaceAll('{budgetGuidance}',   budgetGuidance)
+    .replaceAll('{travelerGuidance}', travelerGuidance);
 }

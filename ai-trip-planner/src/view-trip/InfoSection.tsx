@@ -64,26 +64,22 @@ export function InfoSection({ trip, selection }: Props) {
                   aria-label="Display currency"
                   className="mt-2 inline-flex rounded-full border border-line bg-surface-2 p-0.5 font-mono text-[0.66rem]"
                 >
-                  <button
-                    type="button"
-                    onClick={() => cur.setDisplay('usd')}
-                    aria-pressed={cur.display === 'usd'}
-                    className={`rounded-full px-2.5 py-1 transition-colors ${
-                      cur.display === 'usd' ? 'bg-ink text-white' : 'text-muted2 hover:text-ink'
-                    }`}
-                  >
-                    USD
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => cur.setDisplay('native')}
-                    aria-pressed={cur.display === 'native'}
-                    className={`rounded-full px-2.5 py-1 transition-colors ${
-                      cur.display === 'native' ? 'bg-ink text-white' : 'text-muted2 hover:text-ink'
-                    }`}
-                  >
-                    {cur.native}
-                  </button>
+                  {([
+                    ['usd', 'USD'],
+                    ['native', cur.native],
+                  ] as const).map(([mode, label]) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => cur.setDisplay(mode)}
+                      aria-pressed={cur.display === mode}
+                      className={`rounded-full px-2.5 py-1 transition-colors ${
+                        cur.display === mode ? 'bg-ink text-white' : 'text-muted2 hover:text-ink'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>

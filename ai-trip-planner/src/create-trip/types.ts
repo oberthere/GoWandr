@@ -14,6 +14,8 @@ export interface BudgetOption {
   title: string;
   desc: string;
   icon: string;
+  /** Prompt guidance for this tier, kept next to its title so they can't drift. */
+  prompt: string;
 }
 
 export interface TravelerOption {
@@ -22,4 +24,6 @@ export interface TravelerOption {
   desc: string;
   icon: string;
   people: string;
+  /** Prompt guidance for this group. */
+  prompt: string;
 }
