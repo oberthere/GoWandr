@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import { Header } from './components/custom/header';
+import { Header } from './components/custom/Header';
 import { Landing } from './components/custom/Landing';
 import { Footer } from './view-trip/Footer';
 import CreateTrip from './create-trip';
