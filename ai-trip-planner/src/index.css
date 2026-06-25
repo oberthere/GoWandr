@@ -151,21 +151,13 @@
     @apply bg-background text-foreground font-sans;
     letter-spacing: -0.01em;
     -webkit-font-smoothing: antialiased;
+    /* Global UI scale */
+    zoom: 0.9;
     }
   html {
     @apply font-sans;
     font-size: 16px;
     }
-  /* Scale the whole UI up on large displays (everything sized in rem grows). */
-  @media (min-width: 1536px) {
-    html { font-size: 17.5px; }
-  }
-  @media (min-width: 1800px) {
-    html { font-size: 19px; }
-  }
-  @media (min-width: 2200px) {
-    html { font-size: 20px; }
-  }
   ::selection {
     background: var(--color-ink);
     color: #fff;
@@ -257,12 +249,12 @@
   .back { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: .74rem; letter-spacing: .04em; color: var(--color-muted2); background: none; border: 0; cursor: pointer; padding: 6px 0; }
   .back:hover { color: var(--color-ink); }
   .save-pill { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; color: var(--color-ink); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: 999px; padding: 8px 14px; }
-  .hero-itin { position: relative; margin-top: 16px; border-radius: 20px; overflow: hidden; aspect-ratio: 21/9; box-shadow: var(--shadow-soft); background: #222; }
+  .hero-itin { position: relative; width: 100%; margin-top: 16px; border-radius: 20px; overflow: hidden; aspect-ratio: 19/5; box-shadow: var(--shadow-soft); background: #222; }
   .hero-itin > img, .hero-itin > div:first-child { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .hero-itin .vig { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(12,14,16,.78), rgba(12,14,16,.04) 52%); }
   .hero-itin .cap { position: absolute; left: 34px; top: 30px; right: 34px; color: #fff; z-index: 2; }
   .hero-itin .cap .eyebrow { color: rgba(255,255,255,.78); }
-  .hero-itin h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.3rem,5.5vw,4rem); line-height: 1; letter-spacing: -.035em; margin: 8px 0 0; }
+  .hero-itin h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.9rem,4vw,3rem); line-height: 1.02; letter-spacing: -.035em; margin: 8px 0 0; }
   .hero-itin .coord { font-family: var(--font-mono); font-size: .74rem; opacity: .82; margin-top: 10px; letter-spacing: .08em; }
   .ticket { display: grid; grid-template-columns: 1fr 240px; margin: -44px 24px 0; position: relative; z-index: 2; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: 18px; box-shadow: var(--shadow-soft); }
   .ticket .left { padding: 26px 30px; }
@@ -279,7 +271,7 @@
   .chip { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .04em; padding: 5px 11px; border-radius: 8px; background: var(--color-surface-2); border: 1px solid var(--color-line); color: var(--color-graphite); }
   .section { margin-top: 64px; }
   .sec-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; gap: 16px; flex-wrap: wrap; }
-  .sec-head h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.6rem; letter-spacing: -.025em; margin: 0; }
+  .sec-head h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.4rem; letter-spacing: -.025em; margin: 0; }
   .hotels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
   .hotel { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: 14px; overflow: hidden; transition: .2s; display: flex; flex-direction: column; }
   .hotel:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); border-color: var(--color-line-strong); }
