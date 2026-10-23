@@ -53,6 +53,7 @@ export function CurrencyProvider({ native, children }: { native?: string; childr
   return <CurrencyContext.Provider value={value}>{children}</CurrencyContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- hook belongs with its provider
 export function useCurrency() {
   const ctx = useContext(CurrencyContext);
   if (!ctx) throw new Error('useCurrency must be used within a CurrencyProvider');
